@@ -90,19 +90,14 @@ function BingoBoard() {
 
 			// Solo actualizamos gameOver y el estado en Firebase si hay una fila ganadora
 			if (shouldEndGame && !gameOver) {
-				setGameOver(true);
+				setGameOver(true); // Aquí solo se activa el juego cuando es necesario
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [usedNumbers]);
+	}, [usedNumbers, winningRows]); // Agregamos `winningRows` como dependencia para evitar cambios innecesarios
 
 	// Actualizar en Firebase cada vez que gameOver cambie
 	useEffect(() => {
-		// Solo actualizamos si gameOver ha cambiado a 'true'
-		if (gameOver) {
-			updateGameState();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		updateGameState();
 	}, [ficha, randomNumber, usedNumbers, activeCells, winningRows, gameOver]);
 
 	const firstNumber =
