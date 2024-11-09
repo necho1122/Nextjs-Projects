@@ -209,16 +209,64 @@ a.secondary
   gap: 8px;
 }
 
+.winningRow
+{
+  /* Estilo para la fila ganadora */
+  background-color: #fffae6;
+  display: flex;
+  flex-direction: row;
+}
+
+.winningActiveCell
+{
+  /* Estilo para las celdas activas en una fila ganadora */
+  background-color: #ff0000;
+  color: #fff;
+  font-weight: bold;
+  border: 1px solid #616161;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.activeCell
+{
+  /* Estilo para las celdas activas normales */
+  background-color: #4caf50;
+  color: #fff;
+  border: 1px solid #616161;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .cell
 {
-  padding: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  text-align: center;
-  width: 50px;
-  /* Ajusta según el tamaño deseado */
-  height: 50px;
+  /* Estilo para las celdas normales */
+  background-color: #e0e0e0;
+  color: #000;
+  border: 1px solid #616161;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+}
+
+.winnerMessage
+{
+  /* Estilo para el mensaje "¡Ganó!" */
+  color: #ff0000;
+  font-weight: bold;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
