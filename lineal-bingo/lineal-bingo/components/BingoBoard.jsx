@@ -1,7 +1,7 @@
 'use client';
 import { board } from '@/utilities/constants';
 import styles from '../app/page.module.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { database, ref, set, onValue } from '@/lib/firebase';
 
 function BingoBoard() {
@@ -14,9 +14,9 @@ function BingoBoard() {
 	const [isInitialLoad, setIsInitialLoad] = useState(true); // Estado para manejar la carga inicial
 
 	// Función para actualizar el estado del juego en Firebase
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const updateGameState = () => {
+	const updateGameState = useCallback(() => {
 		if (isInitialLoad) return; // Evitar guardar durante la carga inicial
+
 		const gameStateRef = ref(database, 'gameState');
 		set(gameStateRef, {
 			ficha,
@@ -26,7 +26,15 @@ function BingoBoard() {
 			winningRows: winningRows || [],
 			gameOver,
 		});
-	};
+	}, [
+		ficha,
+		randomNumber,
+		usedNumbers,
+		activeCells,
+		winningRows,
+		gameOver,
+		isInitialLoad,
+	]);
 
 	// Obtener el estado del juego desde Firebase al cargar el componente
 	useEffect(() => {
@@ -46,7 +54,7 @@ function BingoBoard() {
 	}, []);
 
 	// Función para manejar el click y generar un número aleatorio único
-	function handleCellClick() {
+	const handleCellClick = () => {
 		if (usedNumbers.length >= 75) {
 			// Reiniciar el estado del juego si se han generado todos los números
 			setUsedNumbers([]);
@@ -64,19 +72,22 @@ function BingoBoard() {
 			newRandomNumber = Math.floor(Math.random() * 75) + 1;
 		} while (usedNumbers.includes(newRandomNumber));
 
-		// Actualizar los estados y llamar a Firebase después de cada cambio de estado
+		// Si el número ya se ha usado, no hacer nada más
+		if (usedNumbers.includes(newRandomNumber)) return;
+
+		// Actualizar los estados de forma conjunta y optimizada
 		setRandomNumber(newRandomNumber);
 		setFicha(newRandomNumber);
 		setUsedNumbers((prev) => [...prev, newRandomNumber]);
 		setActiveCells((prevCells) => [...prevCells, newRandomNumber]);
-	}
+	};
 
 	// Comprobar si todos los números de cada fila han salido y actualizar filas ganadoras
 	useEffect(() => {
+		if (gameOver) return; // Si el juego ya ha terminado, no hacer nada más
+
 		const newWinningRows = [];
 		let shouldEndGame = false;
-
-		if (gameOver) return; // Evitar cambios cuando ya es game over
 
 		board.forEach((row, rowIndex) => {
 			const allNumbersInRowDrawn = row.every((number) =>
@@ -89,29 +100,22 @@ function BingoBoard() {
 		});
 
 		if (newWinningRows.length > 0) {
+			// Actualizamos las filas ganadoras
 			setWinningRows((prevRows) => [...prevRows, ...newWinningRows]);
+
+			// Solo actualizamos gameOver si debe cambiar de false a true
 			if (shouldEndGame && !gameOver) {
-				// Solo actualizamos si cambia de false a true
-				setGameOver(true);
+				setGameOver(true); // Solo se ejecuta una vez
 			}
 		}
-	}, [usedNumbers, winningRows, gameOver]);
+	}, [usedNumbers, winningRows, gameOver]); // Añadimos gameOver a las dependencias
 
+	// Actualizar Firebase solo cuando el estado realmente cambie
 	useEffect(() => {
-		// Actualiza el estado del juego en Firebase solo si no es la carga inicial
 		if (!isInitialLoad) {
 			updateGameState();
 		}
-	}, [
-		ficha,
-		randomNumber,
-		usedNumbers,
-		activeCells,
-		winningRows,
-		gameOver,
-		isInitialLoad,
-		updateGameState,
-	]); // Se actualiza Firebase cuando cambia el estado
+	}, [updateGameState]);
 
 	const firstNumber =
 		Array.isArray(usedNumbers) && usedNumbers.length > 0
