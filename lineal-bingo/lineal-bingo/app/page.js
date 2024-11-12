@@ -1,12 +1,13 @@
 import styles from './page.module.css';
-import BingoBoard from '@/components/BingoBoard';
+import VerificationPage from '@/components/verificationPage';
+import Header from '@/components/Header';
 
 export default function Home() {
 	return (
 		<div className={styles.page}>
 			<main className={styles.main}>
-				<h1>Bingo Lineal - Daniela</h1>
-				<BingoBoard />
+				<Header />
+				<VerificationPage />
 			</main>
 			<footer className={styles.footer}></footer>
 		</div>

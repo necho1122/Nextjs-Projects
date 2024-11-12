@@ -16,3 +16,8 @@ export const board = [
 	[14, 29, 44, 59, 74],
 	[15, 30, 45, 60, 75],
 ];
+
+export const CODES = {
+	ADMIN: process.env.ADMIN_CODE,
+	USER: process.env.USER_CODE,
+};
