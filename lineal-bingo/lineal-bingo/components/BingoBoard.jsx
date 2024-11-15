@@ -7,6 +7,7 @@ import BingoControlButtons from './BingoControlButtons';
 import BingoRow from './BingoRow';
 import Header from './Header';
 import { useAuth } from '@/context/AuthContext'; // Importa el contexto para el rol de usuario
+import VoiceChat from './VoiceChat';
 
 function BingoBoard() {
 	const { userRole } = useAuth(); // Accede al rol del usuario
@@ -127,6 +128,7 @@ function BingoBoard() {
 	return (
 		<div className={styles.board}>
 			<Header />
+			<VoiceChat />
 			{firstNumber !== null && (
 				<div>
 					Ganador Primera Ficha: {usedNumbers[0]}, Línea: {firstNumber}
