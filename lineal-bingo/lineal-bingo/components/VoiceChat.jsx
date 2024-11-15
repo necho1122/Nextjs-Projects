@@ -7,27 +7,30 @@ const socket = io('https://bingo-lineal-server.onrender.com'); // Asegúrate de 
 
 const VoiceChat = () => {
 	const [peers, setPeers] = useState([]);
-	const [stream, setStream] = useState(null);
 	const [isMicActive, setIsMicActive] = useState(false);
-	const audioRef = useRef();
-	const micRef = useRef();
+	const micStream = useRef();
+	const audioRefs = useRef({});
 
 	useEffect(() => {
 		socket.on('signal', (data) => {
-			const peer = peers.find((p) => p.id === data.from);
-			if (peer) {
-				peer.signal(data.signal);
+			const existingPeer = peers.find((peer) => peer.id === data.from);
+			if (existingPeer) {
+				existingPeer.peer.signal(data.signal);
 			} else {
-				const newPeer = new SimplePeer({
-					initiator: false,
-					trickle: false,
-				});
+				const newPeer = new SimplePeer({ initiator: false, trickle: false });
 				newPeer.signal(data.signal);
-				newPeer.on('stream', (stream) => {
-					audioRef.current.srcObject = stream;
-					audioRef.current.play();
+				newPeer.on('stream', (remoteStream) => {
+					if (!audioRefs.current[data.from]) {
+						const audio = document.createElement('audio');
+						audio.srcObject = remoteStream;
+						audio.play();
+						audioRefs.current[data.from] = audio;
+					}
 				});
-				setPeers([...peers, { id: data.from, peer: newPeer }]);
+				setPeers((prevPeers) => [
+					...prevPeers,
+					{ id: data.from, peer: newPeer },
+				]);
 			}
 		});
 
@@ -36,34 +39,36 @@ const VoiceChat = () => {
 		};
 	}, [peers]);
 
-	const handleMicToggle = () => {
+	const handleMicToggle = async () => {
 		if (isMicActive) {
-			stream.getTracks().forEach((track) => track.stop());
-			setStream(null);
+			micStream.current.getTracks().forEach((track) => track.stop());
+			setIsMicActive(false);
 		} else {
-			navigator.mediaDevices
-				.getUserMedia({ video: false, audio: true })
-				.then((newStream) => {
-					setStream(newStream);
-					const peer = new SimplePeer({
-						initiator: true,
-						trickle: false,
-						stream: newStream,
-					});
-
-					peer.on('signal', (data) => {
-						socket.emit('signal', { signal: data, from: socket.id });
-					});
-
-					peer.on('stream', (stream) => {
-						audioRef.current.srcObject = stream;
-						audioRef.current.play();
-					});
-
-					setPeers([...peers, { id: socket.id, peer }]);
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({
+					video: false,
+					audio: true,
 				});
+				micStream.current = stream;
+				const newPeer = new SimplePeer({
+					initiator: true,
+					trickle: false,
+					stream,
+				});
+
+				newPeer.on('signal', (data) => {
+					socket.emit('signal', { signal: data, from: socket.id });
+				});
+
+				setPeers((prevPeers) => [
+					...prevPeers,
+					{ id: socket.id, peer: newPeer },
+				]);
+				setIsMicActive(true);
+			} catch (error) {
+				console.error('Error al obtener el acceso al micrófono:', error);
+			}
 		}
-		setIsMicActive(!isMicActive);
 	};
 
 	return (
@@ -71,10 +76,6 @@ const VoiceChat = () => {
 			<button onClick={handleMicToggle}>
 				{isMicActive ? 'Cerrar Micrófono' : 'Activar Micrófono'}
 			</button>
-			<audio
-				ref={audioRef}
-				controls
-			/>
 		</div>
 	);
 };
