@@ -246,6 +246,26 @@ a.secondary
   display: flex;
   justify-content: center;
   align-items: center;
+  /* Esta clase solo se activa temporalmente */
+}
+
+/* Agrandar y reducir la celda */
+.enlarge
+{
+  animation: enlargeEffect 0.5s forwards;
+}
+
+@keyframes enlargeEffect
+{
+  0%
+  {
+    transform: scale(2);
+  }
+
+  100%
+  {
+    transform: scale(1);
+  }
 }
 
 .cell
