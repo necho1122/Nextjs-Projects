@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 import SimplePeer from 'simple-peer';
 
-const socket = io('http://localhost:3000'); // Asegúrate de usar el dominio correcto en producción
+const socket = io('https://bingo-lineal-server.onrender.com'); // Asegúrate de usar el dominio correcto en producción
 
 const VoiceChat = () => {
 	const [peers, setPeers] = useState([]);
