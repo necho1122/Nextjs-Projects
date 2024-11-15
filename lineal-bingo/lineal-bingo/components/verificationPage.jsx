@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext'; // Importa el hook del contexto
 import { useRouter } from 'next/navigation';
+import styles from '../app/page.module.css';
 
 export default function VerificationPage() {
 	const { loginAsAdmin, loginAsUser } = useAuth();
@@ -22,14 +23,22 @@ export default function VerificationPage() {
 
 	return (
 		<div>
-			<h1>Login</h1>
-			<input
-				type='text'
-				value={code}
-				onChange={(e) => setCode(e.target.value)}
-				placeholder='Enter code'
-			/>
-			<button onClick={handleLogin}>Login</button>
+			<h2>Login</h2>
+			<div className={styles.inputVerify}>
+				<input
+					type='text'
+					value={code}
+					onChange={(e) => setCode(e.target.value)}
+					placeholder='Ingresa el código'
+					className={styles.inputField}
+				/>
+				<button
+					onClick={handleLogin}
+					className={styles.button}
+				>
+					Login
+				</button>
+			</div>
 		</div>
 	);
 }

@@ -1,5 +1,6 @@
 // components/BingoControlButtons.js
 import React from 'react';
+import styles from '../app/page.module.css';
 
 export function BingoControlButtons({
 	handleCellClick,
@@ -12,6 +13,7 @@ export function BingoControlButtons({
 				onClick={handleCellClick}
 				type='button'
 				disabled={gameOver}
+				className={styles.button}
 			>
 				Ficha
 			</button>
@@ -19,6 +21,7 @@ export function BingoControlButtons({
 			<button
 				onClick={handleClearClick}
 				type='button'
+				className={styles.button}
 			>
 				Reiniciar
 			</button>
