@@ -1,19 +1,22 @@
 import { Server } from 'socket.io';
 
-export const config = {
-	runtime: 'edge', // Permite ejecutar esta API route en el entorno edge
-};
-
 let io;
 
+export const config = {
+	runtime: 'edge', // Usamos 'edge' para mejorar la performance y habilitar WebSockets
+};
+
 const handler = async (req) => {
+	// Solo inicializa el servidor de WebSocket una vez
 	if (!io) {
 		io = new Server({
-			path: '/api/socket',
+			path: '/api/socket', // Esta es la ruta que usará el cliente
+			transports: ['websocket', 'polling'], // Usamos WebSocket y Polling como transporte
 		});
 
 		io.on('connection', (socket) => {
 			console.log('Usuario conectado');
+
 			socket.on('signal', (data) => {
 				socket.broadcast.emit('signal', data);
 			});
@@ -24,6 +27,7 @@ const handler = async (req) => {
 		});
 	}
 
+	// Responde con un estado exitoso aunque no haya un cuerpo en la respuesta
 	return new Response(null, { status: 200 });
 };
 
