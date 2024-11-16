@@ -1,80 +1,103 @@
 // components/VoiceChat.js
-import React, { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
-import SimplePeer from 'simple-peer';
-
-const socket = io('https://bingo-lineal-server.onrender.com'); // Asegúrate de usar el dominio correcto en producción
+import { useEffect, useRef, useState } from 'react';
+import { io } from 'socket.io-client';
 
 const VoiceChat = () => {
-	const [peers, setPeers] = useState([]);
-	const [isMicActive, setIsMicActive] = useState(false);
-	const micStream = useRef();
-	const audioRefs = useRef({});
+	const [isTalking, setIsTalking] = useState(false);
+	const socketRef = useRef(null);
+	const localStreamRef = useRef(null);
+	const peersRef = useRef({});
 
 	useEffect(() => {
-		socket.on('signal', (data) => {
-			const existingPeer = peers.find((peer) => peer.id === data.from);
-			if (existingPeer) {
-				existingPeer.peer.signal(data.signal);
-			} else {
-				const newPeer = new SimplePeer({ initiator: false, trickle: false });
-				newPeer.signal(data.signal);
-				newPeer.on('stream', (remoteStream) => {
-					if (!audioRefs.current[data.from]) {
-						const audio = document.createElement('audio');
-						audio.srcObject = remoteStream;
-						audio.play();
-						audioRefs.current[data.from] = audio;
-					}
+		// Inicializa la conexión a Socket.io
+		socketRef.current = io();
+
+		// Escucha las señales para WebRTC
+		socketRef.current.on('signal', async (data) => {
+			const { from, signal } = data;
+
+			if (signal.type === 'offer') {
+				const peer = new RTCPeerConnection();
+				localStreamRef.current.getTracks().forEach((track) => {
+					peer.addTrack(track, localStreamRef.current);
 				});
-				setPeers((prevPeers) => [
-					...prevPeers,
-					{ id: data.from, peer: newPeer },
-				]);
+
+				peer.onicecandidate = (event) => {
+					if (event.candidate) {
+						socketRef.current.emit('signal', {
+							to: from,
+							signal: event.candidate,
+						});
+					}
+				};
+
+				peer.ontrack = (event) => {
+					const audio = document.createElement('audio');
+					audio.srcObject = event.streams[0];
+					audio.play();
+				};
+
+				await peer.setRemoteDescription(signal);
+				const answer = await peer.createAnswer();
+				await peer.setLocalDescription(answer);
+
+				socketRef.current.emit('signal', {
+					to: from,
+					signal: peer.localDescription,
+				});
+				peersRef.current[from] = peer;
+			} else if (signal.candidate) {
+				peersRef.current[from]?.addIceCandidate(signal.candidate);
 			}
 		});
 
 		return () => {
-			peers.forEach(({ peer }) => peer.destroy());
+			socketRef.current.disconnect();
 		};
-	}, [peers]);
+	}, []);
 
-	const handleMicToggle = async () => {
-		if (isMicActive) {
-			micStream.current.getTracks().forEach((track) => track.stop());
-			setIsMicActive(false);
+	const startTalking = async () => {
+		if (!isTalking) {
+			// Obtén acceso al micrófono
+			localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+				audio: true,
+			});
+			setIsTalking(true);
+
+			// Crear una oferta WebRTC
+			const peer = new RTCPeerConnection();
+			localStreamRef.current
+				.getTracks()
+				.forEach((track) => peer.addTrack(track, localStreamRef.current));
+
+			peer.onicecandidate = (event) => {
+				if (event.candidate) {
+					socketRef.current.emit('signal', { signal: event.candidate });
+				}
+			};
+
+			peer.ontrack = (event) => {
+				const audio = document.createElement('audio');
+				audio.srcObject = event.streams[0];
+				audio.play();
+			};
+
+			const offer = await peer.createOffer();
+			await peer.setLocalDescription(offer);
+
+			socketRef.current.emit('signal', { signal: peer.localDescription });
+			peersRef.current['self'] = peer;
 		} else {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({
-					video: false,
-					audio: true,
-				});
-				micStream.current = stream;
-				const newPeer = new SimplePeer({
-					initiator: true,
-					trickle: false,
-					stream,
-				});
-
-				newPeer.on('signal', (data) => {
-					socket.emit('signal', { signal: data, from: socket.id });
-				});
-
-				setPeers((prevPeers) => [
-					...prevPeers,
-					{ id: socket.id, peer: newPeer },
-				]);
-				setIsMicActive(true);
-			} catch (error) {
-				console.error('Error al obtener el acceso al micrófono:', error);
-			}
+			// Detén el stream de audio
+			localStreamRef.current.getTracks().forEach((track) => track.stop());
+			setIsTalking(false);
 		}
 	};
 
 	return (
 		<div>
-			<button onClick={handleMicToggle}>
-				{isMicActive ? 'Cerrar Micrófono' : 'Activar Micrófono'}
+			<button onClick={startTalking}>
+				{isTalking ? 'Parar de hablar' : 'Hablar'}
 			</button>
 		</div>
 	);
