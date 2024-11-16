@@ -1,4 +1,4 @@
-// components/VoiceChat.js
+// components/VoiceChat.jsx
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
@@ -8,11 +8,22 @@ const VoiceChat = () => {
 	const localStreamRef = useRef(null);
 	const peersRef = useRef({});
 
+	// Verifica dispositivos de entrada de audio
+	const getAudioDevices = async () => {
+		const devices = await navigator.mediaDevices.enumerateDevices();
+		const audioDevices = devices.filter(
+			(device) => device.kind === 'audioinput'
+		);
+		if (audioDevices.length === 0) {
+			throw new Error('No se encontraron dispositivos de entrada de audio.');
+		}
+	};
+
 	useEffect(() => {
 		// Inicializa la conexión a Socket.io
-		socketRef.current = io();
+		socketRef.current = io('/', { path: '/api/socket' });
 
-		// Escucha las señales para WebRTC
+		// Escucha señales para WebRTC
 		socketRef.current.on('signal', async (data) => {
 			const { from, signal } = data;
 
@@ -57,40 +68,48 @@ const VoiceChat = () => {
 	}, []);
 
 	const startTalking = async () => {
-		if (!isTalking) {
-			// Obtén acceso al micrófono
-			localStreamRef.current = await navigator.mediaDevices.getUserMedia({
-				audio: true,
-			});
-			setIsTalking(true);
+		try {
+			if (!isTalking) {
+				// Verifica dispositivos y solicita acceso al micrófono
+				await getAudioDevices();
+				localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+					audio: true,
+				});
+				setIsTalking(true);
 
-			// Crear una oferta WebRTC
-			const peer = new RTCPeerConnection();
-			localStreamRef.current
-				.getTracks()
-				.forEach((track) => peer.addTrack(track, localStreamRef.current));
+				// Configura la conexión WebRTC
+				const peer = new RTCPeerConnection();
+				localStreamRef.current
+					.getTracks()
+					.forEach((track) => peer.addTrack(track, localStreamRef.current));
 
-			peer.onicecandidate = (event) => {
-				if (event.candidate) {
-					socketRef.current.emit('signal', { signal: event.candidate });
-				}
-			};
+				peer.onicecandidate = (event) => {
+					if (event.candidate) {
+						socketRef.current.emit('signal', { signal: event.candidate });
+					}
+				};
 
-			peer.ontrack = (event) => {
-				const audio = document.createElement('audio');
-				audio.srcObject = event.streams[0];
-				audio.play();
-			};
+				peer.ontrack = (event) => {
+					const audio = document.createElement('audio');
+					audio.srcObject = event.streams[0];
+					audio.play();
+				};
 
-			const offer = await peer.createOffer();
-			await peer.setLocalDescription(offer);
+				const offer = await peer.createOffer();
+				await peer.setLocalDescription(offer);
 
-			socketRef.current.emit('signal', { signal: peer.localDescription });
-			peersRef.current['self'] = peer;
-		} else {
-			// Detén el stream de audio
-			localStreamRef.current.getTracks().forEach((track) => track.stop());
-			setIsTalking(false);
+				socketRef.current.emit('signal', { signal: peer.localDescription });
+				peersRef.current['self'] = peer;
+			} else {
+				// Detén el stream de audio
+				localStreamRef.current.getTracks().forEach((track) => track.stop());
+				setIsTalking(false);
+			}
+		} catch (error) {
+			console.error('Error accediendo al micrófono:', error);
+			alert(
+				'No se pudo acceder al micrófono. Por favor, verifica los permisos o la conexión de hardware.'
+			);
 		}
 	};
 
