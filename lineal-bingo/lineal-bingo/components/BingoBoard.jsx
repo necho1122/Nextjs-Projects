@@ -151,7 +151,7 @@ function BingoBoard() {
 				/>
 			)}
 
-			<div>{ficha}</div>
+			<div>Ultima ficha: {ficha}</div>
 		</div>
 	);
 }

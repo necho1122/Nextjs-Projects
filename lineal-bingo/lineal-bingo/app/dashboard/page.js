@@ -16,9 +16,9 @@ export default function Dashboard() {
 
 	return (
 		<div>
+			<BingoBoard />
 			{userRole === 'admin' && <h2>Admin Dashboard</h2>}
 			{userRole === 'user' && <h2>User Dashboard</h2>}
-			<BingoBoard />
 		</div>
 	);
 }
