@@ -1,0 +1,85 @@
+{
+    "stocks": [
+      {
+        "ticker": "AAPL",
+        "company_name": "Apple Inc.",
+        "sector": "Technology",
+        "price": 175.34,
+        "change_percent": 1.24,
+        "market_cap": "2.8T",
+        "volume": 58943000,
+        "pe_ratio": 29.5,
+        "dividend_yield": 0.55,
+        "52_week_high": 198.23,
+        "52_week_low": 130.64,
+        "price_history": [
+          { "date": "2024-11-29", "close": 175.34 },
+          { "date": "2024-11-28", "close": 173.18 },
+          { "date": "2024-11-27", "close": 171.45 },
+          { "date": "2024-11-26", "close": 174.21 },
+          { "date": "2024-11-25", "close": 172.67 }
+        ]
+      },
+      {
+        "ticker": "TSLA",
+        "company_name": "Tesla, Inc.",
+        "sector": "Consumer Discretionary",
+        "price": 242.57,
+        "change_percent": -0.85,
+        "market_cap": "769B",
+        "volume": 35529000,
+        "pe_ratio": 75.3,
+        "dividend_yield": 0,
+        "52_week_high": 299.98,
+        "52_week_low": 170.12,
+        "price_history": [
+          { "date": "2024-11-29", "close": 242.57 },
+          { "date": "2024-11-28", "close": 244.23 },
+          { "date": "2024-11-27", "close": 247.89 },
+          { "date": "2024-11-26", "close": 243.65 },
+          { "date": "2024-11-25", "close": 241.78 }
+        ]
+      },
+      {
+        "ticker": "MSFT",
+        "company_name": "Microsoft Corporation",
+        "sector": "Technology",
+        "price": 361.78,
+        "change_percent": 0.67,
+        "market_cap": "2.7T",
+        "volume": 27643000,
+        "pe_ratio": 31.2,
+        "dividend_yield": 0.85,
+        "52_week_high": 377.15,
+        "52_week_low": 280.89,
+        "price_history": [
+          { "date": "2024-11-29", "close": 361.78 },
+          { "date": "2024-11-28", "close": 359.15 },
+          { "date": "2024-11-27", "close": 358.12 },
+          { "date": "2024-11-26", "close": 360.34 },
+          { "date": "2024-11-25", "close": 357.89 }
+        ]
+      },
+      {
+        "ticker": "AMZN",
+        "company_name": "Amazon.com, Inc.",
+        "sector": "Consumer Discretionary",
+        "price": 142.23,
+        "change_percent": -1.15,
+        "market_cap": "1.46T",
+        "volume": 45832000,
+        "pe_ratio": 80.4,
+        "dividend_yield": 0,
+        "52_week_high": 157.35,
+        "52_week_low": 89.21,
+        "price_history": [
+          { "date": "2024-11-29", "close": 142.23 },
+          { "date": "2024-11-28", "close": 143.92 },
+          { "date": "2024-11-27", "close": 144.85 },
+          { "date": "2024-11-26", "close": 141.76 },
+          { "date": "2024-11-25", "close": 140.12 }
+        ]
+      }
+    ]
+  }
+  

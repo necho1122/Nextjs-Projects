@@ -1,0 +1,22 @@
+.cardContainer
+{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 32px;
+    margin: 30px;
+}
+
+.card
+{
+    width: 200px;
+}
+
+.cardImage
+{
+    border-radius: 10px;
+}
+
+.cardInformations
+{
+    margin-top: 10px;
+}
