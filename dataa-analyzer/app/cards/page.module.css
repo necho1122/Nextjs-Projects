@@ -9,14 +9,12 @@
 .card
 {
     width: 200px;
-}
 
-.cardImage
-{
-    border-radius: 10px;
 }
 
 .cardInformations
 {
     margin-top: 10px;
+    border-radius: 7px;
+    padding: 10px;
 }
