@@ -1,0 +1,9 @@
+.userPanel
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 10px;
+    gap: 1.5rem;
+
+}
