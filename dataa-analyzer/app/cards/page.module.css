@@ -2,4 +2,23 @@
 {
     display: grid;
     grid-template-columns: 1fr 4fr;
+    margin: 10px;
+    gap: 20px;
+    background-color: transparent;
+    z-index: 1;
+}
+
+.dashboardContainer button
+{
+    border-radius: 50%;
+    color: white;
+    background-color: black;
+    padding: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    width: 35px;
+    height: 35px;
+    border: none;
+    margin-top: 20px;
+    cursor: pointer;
 }

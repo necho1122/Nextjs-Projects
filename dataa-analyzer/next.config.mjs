@@ -8,6 +8,12 @@ const nextConfig = {
 				port: '',
 				pathname: '/**', // Permitir cualquier ruta
 			},
+			{
+				protocol: 'https',
+				hostname: 'cdn-icons-png.flaticon.com',
+				port: '',
+				pathname: '/**',
+			},
 		],
 	},
 };

@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import styles from './StockTickers.module.css';
 import Link from 'next/link';
 import { colors } from '@/utils/constants';
@@ -9,22 +11,52 @@ async function loadStocks() {
 	return data;
 }
 
-async function StockTickers() {
-	// Carga de datos simultánea con Promise.all
-	const stocks = await loadStocks();
+function StockTickers() {
+	const [stocks, setStocks] = useState([]);
+	const [currentIndex, setCurrentIndex] = useState(0);
+	const itemsToShow = 3; // Número de elementos por página
 
-	const tickersAmound = stocks.length;
-	const itemsToShow = 3;
+	// Carga de datos con useEffect
+	useEffect(() => {
+		async function fetchStocks() {
+			const data = await loadStocks();
+			setStocks(data);
+		}
+		fetchStocks();
+	}, []);
 
-	if (!Array.isArray(stocks) || stocks.length === 0) return;
+	// Validar que hay datos antes de renderizar
+	if (!Array.isArray(stocks) || stocks.length === 0) {
+		return <div>Loading...</div>;
+	}
 
-	const itemsToRender = stocks.slice(0, itemsToShow);
+	// Obtener los elementos a renderizar según el índice actual
+	const itemsToRender = stocks.slice(currentIndex, currentIndex + itemsToShow);
+
+	// Función para avanzar al siguiente conjunto de elementos
+	const nextItems = () => {
+		if (currentIndex + itemsToShow < stocks.length) {
+			setCurrentIndex(currentIndex + itemsToShow);
+		}
+	};
+
+	// Función para retroceder al conjunto anterior de elementos
+	const prevItems = () => {
+		if (currentIndex - itemsToShow >= 0) {
+			setCurrentIndex(currentIndex - itemsToShow);
+		}
+	};
 
 	return (
-		<div className={styles.dashboardContainer}>
-			<button>{'<'}</button>
+		<div className={styles.tickersContainer}>
+			<button
+				onClick={prevItems}
+				disabled={currentIndex === 0}
+			>
+				{'<'}
+			</button>
 			<div className={styles.cardContainer}>
-				{stocks.map((stock) => (
+				{itemsToRender.map((stock) => (
 					<div
 						key={stock.ticker}
 						className={styles.card}
@@ -48,7 +80,12 @@ async function StockTickers() {
 					</div>
 				))}
 			</div>
-			<button>{'>'}</button>
+			<button
+				onClick={nextItems}
+				disabled={currentIndex + itemsToShow >= stocks.length}
+			>
+				{'>'}
+			</button>
 		</div>
 	);
 }
