@@ -3,14 +3,18 @@ import styles from './page.module.css';
 import UserPanel from '@/components/UserPanel';
 import StockTickers from '@/components/StockTickers';
 import UserAssets from '@/components/UserAssets';
+import StockMarkets from '@/components/StockMarkets';
 
 async function Cards() {
 	return (
 		<div className={styles.dashboardContainer}>
 			<UserPanel />
-			<div>
+			<div className={styles.secondCardsContainer}>
 				<StockTickers />
-				<UserAssets />
+				<div className={styles.secondCards}>
+					<UserAssets />
+					<StockMarkets />
+				</div>
 			</div>
 		</div>
 	);

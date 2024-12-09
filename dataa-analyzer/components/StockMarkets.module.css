@@ -1,0 +1,14 @@
+.marketsContainer
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.marketsMain
+{
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 7px;
+}

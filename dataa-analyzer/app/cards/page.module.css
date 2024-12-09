@@ -22,3 +22,17 @@
     margin-top: 20px;
     cursor: pointer;
 }
+
+.secondCardsContainer
+{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.secondCards
+{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}

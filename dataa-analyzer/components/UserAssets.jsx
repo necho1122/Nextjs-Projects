@@ -15,7 +15,7 @@ function UserAssets() {
 			<div>
 				<h4>invested</h4>
 				<div>
-					<div>
+					<div className={styles.balance}>
 						$8,000,00
 						<button>{'>'}</button>
 					</div>
@@ -24,7 +24,7 @@ function UserAssets() {
 			<div>
 				<h4>Top Stock</h4>
 				<div>
-					<div>
+					<div className={styles.balance}>
 						Apple Inc.
 						<button>{'>'}</button>
 					</div>
