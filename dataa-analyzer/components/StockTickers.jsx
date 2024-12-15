@@ -14,7 +14,7 @@ async function loadStocks() {
 function StockTickers() {
 	const [stocks, setStocks] = useState([]);
 	const [currentIndex, setCurrentIndex] = useState(0);
-	const itemsToShow = 3; // Número de elementos por página
+	const itemsToShow = 4; // Número de elementos por página
 
 	// Carga de datos con useEffect
 	useEffect(() => {

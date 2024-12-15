@@ -7,6 +7,7 @@ import StockMarkets from '@/components/StockMarkets';
 import HotStocks from '@/components/HotStocks';
 import Image from 'next/image';
 import NavBar from '@/components/NavBar';
+import SideBar from '@/components/SideBar';
 
 async function Cards() {
 	return (
@@ -21,13 +22,17 @@ async function Cards() {
 						<StockMarkets />
 						<HotStocks />
 					</div>
-					<div>
+					<div
+						className={styles.thirdCards}
+						style={{ flex: 2 }}
+					>
 						<Image
 							src='/dashboard.webp'
 							alt='Stock Market'
-							width={800}
-							height={500}
+							width={625}
+							height={420}
 						/>
+						<SideBar />
 					</div>
 				</div>
 			</div>
